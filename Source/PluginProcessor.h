@@ -67,7 +67,7 @@ inline const std::map<Names, juce::String>& GetParams()
         
         {Release_Low_Band, "Release Low Band"},
         {Release_Mid_Band, "Release Mid Band"},
-        {Release_High_Band, "Release Mid Band"},
+        {Release_High_Band, "Release High Band"},
         
         {Ratio_Low_Band, "Ratio Low Band"},
         {Ratio_Mid_Band, "Ratio Mid Band"},
@@ -164,7 +164,10 @@ public:
         
     APVTS apvts {*this, nullptr, "Parameters", createParameterLayout() };
 private:
-    CompressorBand compressor;
+    std::array<CompressorBand, 3> compressors;
+    CompressorBand& lowBandComp = compressors[0];
+    CompressorBand& midBandComp = compressors[1];
+    CompressorBand& highBandComp = compressors[2];
     
     using Filter = juce::dsp::LinkwitzRileyFilter<float>;
     //     fc0  fc1
