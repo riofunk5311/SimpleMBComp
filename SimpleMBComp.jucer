@@ -5,13 +5,45 @@
               cppLanguageStandard="17">
   <MAINGROUP id="yZxx6X" name="SimpleMBComp">
     <GROUP id="{5C35E283-1397-B860-EA2C-AEC96F1B996E}" name="Source">
-      <FILE id="UeFJ1F" name="PluginProcessor.cpp" compile="1" resource="0"
-            file="Source/PluginProcessor.cpp"/>
-      <FILE id="twQJgf" name="PluginProcessor.h" compile="0" resource="0"
-            file="Source/PluginProcessor.h"/>
-      <FILE id="LNhfqA" name="PluginEditor.cpp" compile="1" resource="0"
+      <GROUP id="{EE47BC25-D4CF-02E8-062B-24E44BC90A44}" name="DSP">
+        <FILE id="oY8PtX" name="CompressorBand.cpp" compile="1" resource="0"
+              file="Source/DSP/CompressorBand.cpp"/>
+        <FILE id="oXD2Cb" name="CompressorBand.h" compile="0" resource="0"
+              file="Source/DSP/CompressorBand.h"/>
+        <FILE id="RjA7ls" name="Params.cpp" compile="1" resource="0" file="Source/DSP/Params.cpp"/>
+        <FILE id="C90KN7" name="Params.h" compile="0" resource="0" file="Source/DSP/Params.h"/>
+      </GROUP>
+      <GROUP id="{D2F9DE6D-FE76-71D2-9CD4-CD98C10B3D58}" name="GUI">
+        <FILE id="Fhtxuz" name="CompressorBandControls.cpp" compile="1" resource="0"
+              file="Source/GUI/CompressorBandControls.cpp"/>
+        <FILE id="GgvkIk" name="CompressorBandControls.h" compile="0" resource="0"
+              file="Source/GUI/CompressorBandControls.h"/>
+        <FILE id="jPa8xA" name="CustomButtons.cpp" compile="1" resource="0"
+              file="Source/GUI/CustomButtons.cpp"/>
+        <FILE id="w27nyP" name="CustomButtons.h" compile="0" resource="0" file="Source/GUI/CustomButtons.h"/>
+        <FILE id="WsDvMF" name="GlobalControl.cpp" compile="1" resource="0"
+              file="Source/GUI/GlobalControl.cpp"/>
+        <FILE id="LpiZqA" name="GlobalControl.h" compile="0" resource="0" file="Source/GUI/GlobalControl.h"/>
+        <FILE id="P4N44n" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/GUI/LookAndFeel.cpp"/>
+        <FILE id="ndVz1D" name="LookAndFeel.h" compile="0" resource="0" file="Source/GUI/LookAndFeel.h"/>
+        <FILE id="SgyANe" name="RotarySliderWithLabel.cpp" compile="1" resource="0"
+              file="Source/GUI/RotarySliderWithLabel.cpp"/>
+        <FILE id="RDHLmM" name="RotarySliderWithLabel.h" compile="0" resource="0"
+              file="Source/GUI/RotarySliderWithLabel.h"/>
+        <FILE id="rwxIgG" name="Utilities.cpp" compile="1" resource="0" file="Source/GUI/Utilities.cpp"/>
+        <FILE id="GHFq4f" name="Utilities.h" compile="0" resource="0" file="Source/GUI/Utilities.h"/>
+        <FILE id="cKiEv2" name="UtilityComponents.cpp" compile="1" resource="0"
+              file="Source/GUI/UtilityComponents.cpp"/>
+        <FILE id="IYW1LT" name="UtilityComponents.h" compile="0" resource="0"
+              file="Source/GUI/UtilityComponents.h"/>
+      </GROUP>
+      <FILE id="GJPY8A" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="HDZFoC" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="dWopAS" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="p43fh5" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="TJwzgr" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
