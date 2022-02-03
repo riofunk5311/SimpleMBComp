@@ -319,6 +319,10 @@ ratioSlider(nullptr, "")
     addAndMakeVisible(thresholdSlider);
     addAndMakeVisible(ratioSlider);
     
+    bypassButton.addListener(this);
+    soloButton.addListener(this);
+    muteButton.addListener(this);
+    
     bypassButton.setName("X");
     soloButton.setName("S");
     muteButton.setName("M");
@@ -354,7 +358,13 @@ ratioSlider(nullptr, "")
     addAndMakeVisible(lowBand);
     addAndMakeVisible(midBand);
     addAndMakeVisible(highBand);
-    
+}
+
+CompressorBandControls::~CompressorBandControls()
+{
+    bypassButton.removeListener(this);
+    soloButton.removeListener(this);
+    muteButton.removeListener(this);
 }
 
 void CompressorBandControls::resized()
@@ -432,64 +442,39 @@ void CompressorBandControls::paint(juce::Graphics &g)
     auto bounds = getLocalBounds();
     drawModuleBackground(g, bounds);
 }
-//==============================================================================
-GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
+
+void CompressorBandControls::buttonClicked(juce::Button *button)
 {
-    using namespace Params;
-    const auto& params = GetParams();
-    
-    auto getParamHelper = [&params, &apvts](const auto& name) -> auto&
-    {
-        return getParam(apvts, params, name);
-    };
-    
-    auto& gainInParam = getParamHelper(Names::Gain_In);
-    auto& lowMidParam = getParamHelper(Names::Low_Mid_Crossover_Freq);
-    auto& midHighParam = getParamHelper(Names::Mid_High_Crossover_Freq);
-    auto& gainOutParam = getParamHelper(Names::Gain_Out);
-    
-    inGainSlider = std::make_unique<RSWL>(&gainInParam, "dB", "INPUT TRIM");
-    lowMidXoverSlider = std::make_unique<RSWL>(&lowMidParam, "Hz", "LOW-MID X-OVER");
-    midHighXoverSlider = std::make_unique<RSWL>(&midHighParam, "Hz", "MID-HI X-OVER");
-    outGainSlider = std::make_unique<RSWL>(&gainOutParam, "dB", "OUTPUT TRIM");
-    
-    auto makeAttachmentHelper = [&params, &apvts](auto& attachment, const auto& name, auto& slider)
-    {
-        makeAttachment(attachment, apvts, params, name, slider);
-    };
-    
-    makeAttachmentHelper(inGainSliderAttachment,
-                         Names::Gain_In,
-                         *inGainSlider);
-    
-    makeAttachmentHelper(lowMidXoverSliderAttachment,
-                         Names::Low_Mid_Crossover_Freq,
-                         *lowMidXoverSlider);
-    
-    makeAttachmentHelper(midHighXoverSliderAttachment,
-                         Names::Mid_High_Crossover_Freq,
-                         *midHighXoverSlider);
-    
-    makeAttachmentHelper(outGainSliderAttachment,
-                         Names::Gain_Out,
-                         *outGainSlider);
-    
-    addLabelPairs(inGainSlider->labels, gainInParam, "dB");
-    addLabelPairs(lowMidXoverSlider->labels, lowMidParam, "Hz");
-    addLabelPairs(midHighXoverSlider->labels, midHighParam, "Hz");
-    addLabelPairs(outGainSlider->labels, gainOutParam, "dB");
-    
-    
-    addAndMakeVisible(*inGainSlider);
-    addAndMakeVisible(*lowMidXoverSlider);
-    addAndMakeVisible(*midHighXoverSlider);
-    addAndMakeVisible(*outGainSlider);
+    updateSliderEnablements();
+    updateSoloMuteBypassToggleStates(*button);
 }
 
-void GlobalControls::paint(juce::Graphics &g)
-{   // fill the border color
-    auto bounds = getLocalBounds();
-    drawModuleBackground(g, bounds);
+void CompressorBandControls::updateSliderEnablements()
+{
+    auto disabled = muteButton.getToggleState() || bypassButton.getToggleState();
+    attackSlider.setEnabled(!disabled);
+    releaseSlider.setEnabled(!disabled);
+    thresholdSlider.setEnabled(!disabled);
+    ratioSlider.setEnabled(!disabled);
+}
+
+void CompressorBandControls::updateSoloMuteBypassToggleStates(juce::Button &clickedButton)
+{
+    if(&clickedButton == &soloButton && soloButton.getToggleState())
+    {
+        bypassButton.setToggleState(false, juce::NotificationType::sendNotification);
+        muteButton.setToggleState(false, juce::NotificationType::sendNotification);
+    }
+    else if(&clickedButton == &muteButton && muteButton.getToggleState())
+    {
+        bypassButton.setToggleState(false, juce::NotificationType::sendNotification);
+        soloButton.setToggleState(false, juce::NotificationType::sendNotification);
+    }
+    else if (&clickedButton == &bypassButton && bypassButton.getToggleState() )
+    {
+        muteButton.setToggleState(false, juce::NotificationType::sendNotification);
+        soloButton.setToggleState(false, juce::NotificationType::sendNotification);
+    }
 }
 
 void CompressorBandControls::updateAttachments()
@@ -619,6 +604,66 @@ void CompressorBandControls::updateAttachments()
     makeAttachmentHelper(soloButtonAttachment, names[Pos::Solo], soloButton);
     makeAttachmentHelper(muteButtonAttachment, names[Pos::Mute], muteButton);
 }
+//==============================================================================
+GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
+{
+    using namespace Params;
+    const auto& params = GetParams();
+    
+    auto getParamHelper = [&params, &apvts](const auto& name) -> auto&
+    {
+        return getParam(apvts, params, name);
+    };
+    
+    auto& gainInParam = getParamHelper(Names::Gain_In);
+    auto& lowMidParam = getParamHelper(Names::Low_Mid_Crossover_Freq);
+    auto& midHighParam = getParamHelper(Names::Mid_High_Crossover_Freq);
+    auto& gainOutParam = getParamHelper(Names::Gain_Out);
+    
+    inGainSlider = std::make_unique<RSWL>(&gainInParam, "dB", "INPUT TRIM");
+    lowMidXoverSlider = std::make_unique<RSWL>(&lowMidParam, "Hz", "LOW-MID X-OVER");
+    midHighXoverSlider = std::make_unique<RSWL>(&midHighParam, "Hz", "MID-HI X-OVER");
+    outGainSlider = std::make_unique<RSWL>(&gainOutParam, "dB", "OUTPUT TRIM");
+    
+    auto makeAttachmentHelper = [&params, &apvts](auto& attachment, const auto& name, auto& slider)
+    {
+        makeAttachment(attachment, apvts, params, name, slider);
+    };
+    
+    makeAttachmentHelper(inGainSliderAttachment,
+                         Names::Gain_In,
+                         *inGainSlider);
+    
+    makeAttachmentHelper(lowMidXoverSliderAttachment,
+                         Names::Low_Mid_Crossover_Freq,
+                         *lowMidXoverSlider);
+    
+    makeAttachmentHelper(midHighXoverSliderAttachment,
+                         Names::Mid_High_Crossover_Freq,
+                         *midHighXoverSlider);
+    
+    makeAttachmentHelper(outGainSliderAttachment,
+                         Names::Gain_Out,
+                         *outGainSlider);
+    
+    addLabelPairs(inGainSlider->labels, gainInParam, "dB");
+    addLabelPairs(lowMidXoverSlider->labels, lowMidParam, "Hz");
+    addLabelPairs(midHighXoverSlider->labels, midHighParam, "Hz");
+    addLabelPairs(outGainSlider->labels, gainOutParam, "dB");
+    
+    
+    addAndMakeVisible(*inGainSlider);
+    addAndMakeVisible(*lowMidXoverSlider);
+    addAndMakeVisible(*midHighXoverSlider);
+    addAndMakeVisible(*outGainSlider);
+}
+
+void GlobalControls::paint(juce::Graphics &g)
+{   // fill the border color
+    auto bounds = getLocalBounds();
+    drawModuleBackground(g, bounds);
+}
+
 
 void GlobalControls::resized()
 {
