@@ -219,6 +219,13 @@ void SpectrumAnalyzer::drawTextLabels(juce::Graphics &g)
 void SpectrumAnalyzer::resized()
 {
     using namespace juce;
+    auto fftBounds = getAnalysisArea().toFloat();
+    auto negInf = jmap(getLocalBounds().toFloat().getBottom(),
+                       fftBounds.getBottom(), fftBounds.getY(),
+                       -48.f, 0.f);
+    DBG("Negative ifinity: " << negInf);
+    leftPathProducer.updateNegativeInfinity(negInf);
+    rightPathProducer.updateNegativeInfinity(negInf);
 }
 
 void SpectrumAnalyzer::parameterValueChanged(int parameterIndex, float newValue)
@@ -226,50 +233,12 @@ void SpectrumAnalyzer::parameterValueChanged(int parameterIndex, float newValue)
     parametersChanged.set(true);
 }
 
-void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
-{
-    juce::AudioBuffer<float> tempIncomingBuffer;
-    while( leftChannelFifo->getNumCompleteBuffersAvailable() > 0 )
-    {
-        if( leftChannelFifo->getAudioBuffer(tempIncomingBuffer) )
-        {
-            auto size = tempIncomingBuffer.getNumSamples();
-
-            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, 0),
-                                              monoBuffer.getReadPointer(0, size),
-                                              monoBuffer.getNumSamples() - size);
-
-            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, monoBuffer.getNumSamples() - size),
-                                              tempIncomingBuffer.getReadPointer(0, 0),
-                                              size);
-            
-            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
-        }
-    }
-    
-    const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
-    const auto binWidth = sampleRate / double(fftSize);
-
-    while( leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0 )
-    {
-        std::vector<float> fftData;
-        if( leftChannelFFTDataGenerator.getFFTData( fftData) )
-        {
-            pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, -48.f);
-        }
-    }
-    
-    while( pathProducer.getNumPathsAvailable() > 0 )
-    {
-        pathProducer.getPath( leftChannelFFTPath );
-    }
-}
-
 void SpectrumAnalyzer::timerCallback()
 {
     if( shouldShowFFTAnalysis )
     {
         auto fftBounds = getAnalysisArea().toFloat();
+        fftBounds.setBottom(getLocalBounds().getBottom());
         auto sampleRate = audioProcessor.getSampleRate();
         
         leftPathProducer.process(fftBounds, sampleRate);
