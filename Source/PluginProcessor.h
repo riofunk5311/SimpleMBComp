@@ -16,8 +16,8 @@
  4) Banc Select Functionality Done
  5) Banc Select Buttons reflect the Solo/Mute/Bypass state Done
  6) Custom Look and Feel for Sliders and Toggle Buttons Done
- 7) Spectrum Analyzer Overview
- 8) Data Structre for Spectrum Analyzer
+ 7) Spectrum Analyzer Overview Done
+ 8) Data Structre for Spectrum Analyzer Done
  9) Fifo usage in pluginProcessor::processBlock
  10) implementation of the analyzer rendering pre-computed paths
  11) Drawing crossovers on top of the Analyzer Plot
