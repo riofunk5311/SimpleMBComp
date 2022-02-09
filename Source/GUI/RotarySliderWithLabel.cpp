@@ -131,3 +131,17 @@ void RotarySliderWithLabels::changeParam(juce::RangedAudioParameter *p)
     param = p;
     repaint();
 }
+//==============================================================================
+juce::String RatioSlider::getDisplayString() const
+{
+    auto choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param);
+    jassert(choiceParam != nullptr);
+    
+    auto currentChoice = choiceParam->getCurrentChoiceName();
+    if(currentChoice.contains(".0"))
+        currentChoice = currentChoice.substring(0, currentChoice.indexOf("."));
+    
+    currentChoice << ":1";
+    
+    return currentChoice;
+}
